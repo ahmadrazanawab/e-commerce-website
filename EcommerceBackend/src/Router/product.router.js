@@ -1,15 +1,20 @@
 import express from "express";
 const productRoute = express.Router();
-import { fetchUser } from "../Middleware/fetchUser.middleware.js";
+import { fetchAdmin } from "../Middleware/fetchAdmin.middleware.js";
 import {
+    getProduct,
     addProduct,
-    getProduct
+    updateProduct,
+    deleteProduct
  } from "../Controller/Prodcut.Controller.js";
-
-// admin
-productRoute.route("/addProduct").post(addProduct);
 
 // user
 productRoute.route("/getProduct").get(getProduct);
+
+// admin
+productRoute.route("/addProduct").post(fetchAdmin, addProduct);
+productRoute.route("/updateProduct/:id").put(fetchAdmin, updateProduct);
+productRoute.route("/deleteProduct/:id").delete(fetchAdmin, deleteProduct);
+
 
 export { productRoute };

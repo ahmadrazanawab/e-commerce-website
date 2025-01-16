@@ -38,8 +38,42 @@ const addProduct = asyncHandler(async (req, res) => {
     res.status(201).json({ success: true, message: "Product has been created successfully", newProduct });
 });
 
+// admin update product
+const updateProduct = asyncHandler(async (req, res) => {
+    const { name, description, images, price, stock, category } = req.body;
+    // create new object product
+    let newProduct = {};
+
+    if (name) { newProduct.name = name };
+    if (description) { newProduct.description = description };
+    if (images) { newProduct.images = images };
+    if (price) { newProduct.price = price };
+    if (stock) { newProduct.stock = stock };
+    if (category) { newProduct.category = category };
+    
+    let product = await Product.findById(req.params.id);
+    if (!product) {
+        return res.status(404).json({ success: true, error: "Prodcut not found" });
+    }
+
+    product = await Product.findByIdAndUpdate(req.params.id, { $set: newProduct }, { new: true });
+    
+    res.status(200).json({ success: true, message: "Prodcut has been updated successfully", product });
+});
+
+const deleteProduct = asyncHandler(async (req, res) => {
+    
+    let product = await Product.findById(req.params.id);
+    if (!product) {
+        return res.status(404).json({ success: true, error: "Prodcut not found" });
+    }
+    product = await Product.findByIdAndDelete(req.params.id); 
+    res.status(200).json({ success: true, message: "Prodcut has been deleted"});
+})
 
 export {
+    getProduct,
     addProduct,
-    getProduct
+    updateProduct,
+    deleteProduct
 }
