@@ -2,23 +2,34 @@ import express from "express";
 const productRoute = express.Router();
 import { fetchAdmin } from "../Middleware/fetchAdmin.middleware.js";
 import { fetchUser } from "../Middleware/fetchUser.middleware.js";
+import { addCart } from "../Controller/Cart.Controller.js";
+import { orderProduct } from "../Controller/Order.Controller.js";
+import { upload } from "../Middleware/multer.middleware.js";
 import {
     getProduct,
     addProduct,
     updateProduct,
     deleteProduct
 } from "../Controller/Prodcut.Controller.js";
- 
-import { addCart } from "../Controller/Cart.Controller.js";
+
+
 
 // user
 productRoute.route("/getProduct").get(getProduct);
 
 // user add to cart
-productRoute.route("/addtocart").post(fetchUser,addCart);
+productRoute.route("/addtocart").post(fetchUser, addCart);
+// user order product
+productRoute.route("/orderProduct").post(fetchUser, orderProduct);
 
 // admin
-productRoute.route("/addProduct").post(fetchAdmin, addProduct);
+productRoute.route("/addProduct").post(
+    upload.fields([
+        {
+            name: "images",
+            minCount: 1
+        }
+    ]), fetchAdmin, addProduct);
 productRoute.route("/updateProduct/:id").put(fetchAdmin, updateProduct);
 productRoute.route("/deleteProduct/:id").delete(fetchAdmin, deleteProduct);
 

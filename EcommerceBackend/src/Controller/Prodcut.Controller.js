@@ -1,5 +1,6 @@
 import { Product } from "../Model/Product.model.js";
 import { asyncHandler } from "../Utility/asyncHandler.js";
+import { uploadOnCloudinary } from "../Utility/cloudinary.js";
 
 
 // client - user see all product
@@ -16,8 +17,8 @@ const getProduct = asyncHandler(async (_, res) => {
 
 // admin - add product
 const addProduct = asyncHandler(async (req, res) => {
-    const { name, description, images, price, stock, category } = req.body;
-    if (!(name && description && images && price && stock && category)) {
+    const { name, description, price, stock, category } = req.body;
+    if (!(name && description && price && stock && category)) {
         return res.status(400).json({ success: false, error: "All fields are requered!" });
     };
 
@@ -25,10 +26,17 @@ const addProduct = asyncHandler(async (req, res) => {
         return res.status(400).json({ success: false, error: "Description must be at least 6 characters" });
     };
 
+    const productImageLocalPath = req.files?.images[0]?.path;
+
+    if (!productImageLocalPath) {
+        return res.status(400).json({success:false,error:"Product image file is required"})
+    }
+    const productImage = await uploadOnCloudinary(productImageLocalPath);
+
     const newProduct = Product({
         name,
         description,
-        images,
+        images:productImage.url,
         price,
         stock,
         category
@@ -40,13 +48,12 @@ const addProduct = asyncHandler(async (req, res) => {
 
 // admin update product
 const updateProduct = asyncHandler(async (req, res) => {
-    const { name, description, images, price, stock, category } = req.body;
+    const { name, description, price, stock, category } = req.body;
     // create new object product
     let newProduct = {};
 
     if (name) { newProduct.name = name };
     if (description) { newProduct.description = description };
-    if (images) { newProduct.images = images };
     if (price) { newProduct.price = price };
     if (stock) { newProduct.stock = stock };
     if (category) { newProduct.category = category };
