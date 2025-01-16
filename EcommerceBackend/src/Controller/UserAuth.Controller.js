@@ -1,14 +1,17 @@
 import { User } from "../Model/user.model.js";
 import { asyncHandler } from "../Utility/asyncHandler.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const userRegister = asyncHandler(async (req, res) => {
     let { name, email, number, password } = req.body;
+    
     if (!(name && email && number && password)) {
         return res.status(400).json({ success: false, error: "All fields are required!" });
     }
-    if (number.length < 10 || number.length > 10) {
-        return res.status(400).json({ success: false, error: "Number must be 10 digit" });
+    // Validate number
+    if (number.length !== 10) {
+        return res.status(400).json({ success: false, error: "Number must be 10 digits." });
     }
     if (password.length < 6) {
         return res.status(400).json({ success: false, error: "Password must be at least 6 characters" });
@@ -29,8 +32,14 @@ const userRegister = asyncHandler(async (req, res) => {
         password: hashPassword
     });
     await newUser.save();
+    let data = {
+        user: {
+            id:newUser.id
+        }
+    }
 
-    res.status(201).json({ success: true, message: "User has been register successfull", newUser });
+    let token = await jwt.sign(data, process.env.JWT_SECRET);
+    res.status(201).json({ success: true, message: "User has been register successfull", newUser,token });
 
 });
 const userLogin = asyncHandler(async (req, res) => {
@@ -47,13 +56,26 @@ const userLogin = asyncHandler(async (req, res) => {
     if (!user) {
         return res.status(401).json({ success: false, error: "Email Not Found" });
     }
-    let comparePassword = await bcrypt.compare(password,user.password);
+    let comparePassword = await bcrypt.compare(password, user.password);
     if (!comparePassword) {
         return res.status(401).json({ success: false, error: "Password Not Found" });
     }
-    res.json({ success: true, message: "User login successfully", user });
+    let data = {
+        user: {
+            id:user.id
+        }
+    }
+    let token = await jwt.sign(data, process.env.JWT_SECRET);
+    res.json({ success: true, message: "User login successfully",token });
+});
+
+const getUser = asyncHandler(async (req, res) => {
+    const userId = req.user.id;
+    const user = await User.findById(userId).select('-password');
+    res.status(200).json({ success: true, message: "Get User", user });
 })
 export {
     userRegister,
-    userLogin
+    userLogin,
+    getUser
 }

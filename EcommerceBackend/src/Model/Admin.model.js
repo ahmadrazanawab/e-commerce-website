@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const adminSchema = new mongoose.Schema({
     name:{
         type: String,
         required: true
@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        default:"user"
+        default:"admin"
     },
     createdAt: {
         type: Date,
@@ -36,5 +36,5 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-const User = mongoose.model("user", userSchema);
-export { User };
+const Admin = mongoose.model("admin", adminSchema);
+export { Admin };
