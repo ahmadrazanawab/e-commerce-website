@@ -5,6 +5,7 @@ import { fetchUser } from "../Middleware/fetchUser.middleware.js";
 import { addCart } from "../Controller/Cart.Controller.js";
 import { orderProduct } from "../Controller/Order.Controller.js";
 import { upload } from "../Middleware/multer.middleware.js";
+import { UserReview } from "../Controller/Review.Controller.js";
 import {
     getProduct,
     addProduct,
@@ -21,6 +22,8 @@ productRoute.route("/getProduct").get(getProduct);
 productRoute.route("/addtocart").post(fetchUser, addCart);
 // user order product
 productRoute.route("/orderProduct").post(fetchUser, orderProduct);
+// user review
+productRoute.route("/userReview").post(fetchUser, UserReview);
 
 // admin
 productRoute.route("/addProduct").post(

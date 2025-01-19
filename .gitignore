@@ -21,7 +21,6 @@ EcommerceBackend/.env
 .env.production.local
 .env.local
 
-
 # Editor directories and files
 EcommerceBackend/.vscode/*
 EcommerceBackend/!.vscode/extensions.json
