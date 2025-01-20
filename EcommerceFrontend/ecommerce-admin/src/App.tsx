@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Home from "./Pages/Home";
 import About from "./Pages/About";
 import Product from "./components/Product";
+import GetAllUser from "./Pages/GetAllUser";
 // import Product from "./Pages/Product";
 
 const App = () => {
@@ -18,6 +19,10 @@ const App = () => {
         {
             path: '/product',
             element: <><Navbar /><Product /></>
+        },
+        {
+            path: '/getAllUser',
+            element: <><Navbar /><GetAllUser /></>
         },
     ])
     return (

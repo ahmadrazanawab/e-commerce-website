@@ -6,4 +6,12 @@ export interface ProductItem {
     price: number;
     stock: number;
     category: string;
-  }
+}
+  
+export interface getUserDetails {
+    name: string;
+    email: string;
+    number: number;
+    createdAt?: number;
+
+}

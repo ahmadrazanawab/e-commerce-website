@@ -3,6 +3,17 @@ import { asyncHandler } from "../Utility/asyncHandler.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+// see the Admin 
+const getAllUser = asyncHandler(async (req , res) => {
+    const user = await User.find();
+
+    if (!user || user.length === 0) {
+        return res.status(404).json({ success: false, error: "No user found" });
+    }
+
+    res.status(200).json({ success: true, user });
+    // console.log(user.length);
+})
 const userRegister = asyncHandler(async (req, res) => {
     let { name, email, number, password } = req.body;
     
@@ -75,6 +86,7 @@ const getUser = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, message: "Get User", user });
 })
 export {
+    getAllUser,
     userRegister,
     userLogin,
     getUser

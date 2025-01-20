@@ -42,8 +42,8 @@ const adminRegister = asyncHandler(async (req, res) => {
             id:newAdmin.id
         }
     }
-
-    let token = await jwt.sign(data, process.env.JWT_SECRET, { expiresIn: "1h" });
+    //  { expiresIn: "1h" }
+    let token = await jwt.sign(data, process.env.JWT_SECRET);
     
     res.status(201).json({ success: true, message: "Admin registered successfully", newAdmin,token });
 });
@@ -65,7 +65,8 @@ const adminLogin = asyncHandler(async (req, res) => {
         return res.status(401).json({ success: false, error: "Admin not found!" });
     }
 
-    const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    //  { expiresIn: "1h" }
+    const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET);
 
     res.status(200).json({ success: true, message: "Admin Logged in successfully", token });
 });

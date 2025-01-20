@@ -2,7 +2,10 @@ import { useState } from "react";
 import { BiCartDownload } from "react-icons/bi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
+import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
+import { RootState } from "../Redux/Store";
+
 
 interface LinksType{
     id: number;
@@ -12,7 +15,8 @@ interface LinksType{
 }
 const Navbar = () => {
     const [open, setOpen] = useState<boolean>(false);
-
+    const cart = useSelector((state: RootState) => (state.products.cart));
+    const totalCart = cart.length;
     const Links:LinksType[] = [
         { id: 1, name: "Home", to: '/' },
         { id: 2, name: "About", to: '/about' },
@@ -38,10 +42,10 @@ const Navbar = () => {
             </div>
 
             <div className="flex mx-2 items-center">
-                <h4 className="flex relative">
-                    <span className="text-red-600 text-xl font-bold flex">(0)</span>
+                <Link to='/cart' className="flex relative">
+                    <span className="text-red-600 text-xl font-bold flex">({totalCart})</span>
                     <BiCartDownload className="text-white cursor-pointer " size={30} />
-                </h4>
+                </Link>
                 <div onClick={()=>{setOpen(!open)}} className={`text-white md:hidden visible  flex items-center mr-4 ml-2 justify-center`}>
                     {!open ? <GiHamburgerMenu className="" size={25} />
                     :<IoClose className="font-bold" size={25} />}

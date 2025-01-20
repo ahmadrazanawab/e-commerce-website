@@ -10,6 +10,7 @@ import {
 
 userRoute.route('/userRegister').post(userRegister);
 userRoute.route('/userLogin').post(userLogin);
-userRoute.route('/getUser').get(fetchUser,getUser);
+userRoute.route('/getUser').get(fetchUser, getUser);
+
 
 export { userRoute };

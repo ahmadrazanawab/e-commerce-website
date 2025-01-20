@@ -11,8 +11,8 @@ const getProduct = asyncHandler(async (_, res) => {
         return res.status(404).json({ success: false, error: "No products found" });
     }
 
-    res.status(200).json({ success: true, products });
-    
+    res.status(200).json({ success: true, products,});
+    // console.log(products.length);
 });
 
 // admin - add product

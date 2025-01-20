@@ -51,7 +51,7 @@ const AddProductItem: React.FC = () => {
             const response = await axios.post(`${host}/api/product/v2/addProduct`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
-                    "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ODhhMWJlNWFmNTExM2I2OTVmMmE0ZCIsImlhdCI6MTczNzI1OTE5MywiZXhwIjoxNzM3MjYyNzkzfQ.yldn6VdPRatTe8uUZR3BvoiCoQNEUvz-FiHB8g4WtNo",
+                    "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ODhhMWJlNWFmNTExM2I2OTVmMmE0ZCIsImlhdCI6MTczNzI4MjUzMCwiZXhwIjoxNzM3Mjg2MTMwfQ.I3ro2PYlQvTSukTc5AzsNvnnpc4AbAgyO8aPDvTmRr8"
                 }
             });
 

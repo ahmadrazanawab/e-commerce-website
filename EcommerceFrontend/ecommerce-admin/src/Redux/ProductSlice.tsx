@@ -5,9 +5,11 @@ interface ProductState {
     products: ProductItem[];
 }
 
+
 const initialState: ProductState = {
-    products: [], // Start with an empty array of products
+    products: [],// Start with an empty array of products
 };
+
 
 const productSlice = createSlice({
     name: 'products',
