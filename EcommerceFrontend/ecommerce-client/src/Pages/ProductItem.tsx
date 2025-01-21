@@ -3,12 +3,15 @@ import { ProductDetailsItem } from "../components/ProductItemDefine";
 import { LiaRupeeSignSolid } from "react-icons/lia";
 import { RootState } from "../Redux/Store";
 import { addToCart,incrementQuantity, decrementQuantity } from "../Redux/ProductSlice";
+import axios from "axios";
 
 interface ProductProps {
     product: ProductDetailsItem;
 }
 
 const ProductItem: React.FC<ProductProps> = (props) => {
+
+    const host = "http://localhost:7002";
     const { product } = props;
     const dispatch = useDispatch();
 
@@ -17,8 +20,22 @@ const ProductItem: React.FC<ProductProps> = (props) => {
     const totalCartQuantity = cartItem?.quantity || 1;
     const totalPrice = totalCartQuantity * (cartItem?.price || product.price);
    
+    const AddtoCart = async () => {
+        const response = await axios.post(`${host}/api/product/v2/addtocart`, {
+            productId: product._id,
+            quantity: cartItem?.quantity || 1
+        }, {
+            headers: {
+                "Content-Type":"application/json",
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjc4ODlmOTRhY2M5YTQ5MzEzNTZmN2ZkIn0sImlhdCI6MTczNzM3Nzg1M30.GEDeMyHhYmcHEiZE7a9ek2xW1WJG5ZhBUxM7SZPz1rs"
+            }
+        });
+        console.log(response.data);
+    }
+    
     const handleAddToCart = (product: any) => {
-        dispatch(addToCart(product))
+        dispatch(addToCart(product));
+        AddtoCart();
         alert("Product has been added to cart successfuly");
     }
 

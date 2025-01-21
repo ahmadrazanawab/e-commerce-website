@@ -2,37 +2,87 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../Redux/Store";
 import { LiaRupeeSignSolid } from "react-icons/lia";
 import { Link } from "react-router-dom";
-import { incrementQuantity, decrementQuantity, deleteCart} from "../Redux/ProductSlice";
-
+import { setCart, incrementQuantity, decrementQuantity, deleteCart } from "../Redux/ProductSlice";
+import axios from "axios";
+import { useEffect } from "react";
 
 const Cart = () => {
+    const host = "http://localhost:7002"
     const Carts = useSelector((state: RootState) => (state.products.cart));
     const dispatch = useDispatch()
-    
+
     const totalProductsPrice = Carts.reduce((totalPrice, item: any) => {
-        return totalPrice + item.price * item.quantity;
+        return totalPrice + item.product?.price * item.quantity;
     }, 0);
 
-    const handleDeleteCart = (cart: any) => {
-        dispatch(deleteCart(cart));
-        alert("Cart has been removed successfully");
+
+    const fetchAllCarts = async () => {
+        try {
+            const response = await axios.get(`${host}/api/product/v2/fetchallcart`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjc4ODlmOTRhY2M5YTQ5MzEzNTZmN2ZkIn0sImlhdCI6MTczNzM3Nzg1M30.GEDeMyHhYmcHEiZE7a9ek2xW1WJG5ZhBUxM7SZPz1rs"
+                }
+            });
+
+            let fetchCart = response.data.cart.products;
+            dispatch(setCart(fetchCart));
+            // console.log(response.data.cart.products.product);
+
+        } catch (error) {
+            console.log("Fetch cart error...", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchAllCarts();
+    }, []);
+
+    const deleteProductFromCart = async (productId: string) => {
+        console.log("Deleting product with ID:", productId);
+        try {
+            const response = await axios.delete(`${host}/api/product/v2/cart/product/${productId}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjc4ODlmOTRhY2M5YTQ5MzEzNTZmN2ZkIn0sImlhdCI6MTczNzM3Nzg1M30.GEDeMyHhYmcHEiZE7a9ek2xW1WJG5ZhBUxM7SZPz1rs"
+                }
+            });
+            console.log(response.data);
+            let fetchCart= response.data.cart.products;
+            return dispatch(setCart(fetchCart));
+        } catch (error: any) {
+            throw new Error(error.response?.data?.message || 'Something went wrong');
+        }
+
     }
+    const handleDeleteCart = async (productId: string) => {
+        try {
+            dispatch(deleteCart(productId));
+            await deleteProductFromCart(productId);
+            fetchAllCarts();
+            alert("Cart has been removed successfully");
+        } catch (error) {
+            console.log("Delete Cart Error ", error);
+        }
+    }
+
+
 
     return (
         <section className="pt-24 min-h-[100vh] bg-slate-300 mx-4 pb-6 flex justify-center flex-wrap">
             {
                 Carts.length === 0 ? <h4 className="text-2xl font-serif">Your Apna Shope Cart is empty</h4> :
-                    Carts.map((cart) => {
+                    Carts && Carts.map((cart: any) => {
                         return <div key={cart._id} className="bg-slate-50 p-4  rounded mx-2 my-2 md:w-[300px]  min-w-[200px]">
                             <div className="flex items-center justify-center">
-                                <img src={cart.images}
+                                <img src={cart.product?.images || ""}
                                     className="md:w-[300px] sm:w-[200px] w-[250px] md:h-[250px] h-[200px] rounded" alt="No image" />
                             </div>
-                            <h4 className="text-xl font-sans mt-2">{cart.name}</h4>
-                            <p className="text-sm font-thin">{cart.description}</p>
+                            <h4 className="text-xl font-sans mt-2">{cart.product?.name || ""}</h4>
+                            <p className="text-sm font-thin">{cart.product?.description || ""}</p>
                             <p className="flex items-center">
                                 <span><LiaRupeeSignSolid /></span>
-                                <span className="text-xl font-bold">{cart.price}</span>
+                                <span className="text-xl font-bold">{cart.product?.price || ""}</span>
                                 <span className="flex items-center mx-2 text-sm text-gray-600">M.R.P:
                                     <span className="flex items-center line-through "><LiaRupeeSignSolid />1400</span>
                                     <span className="text-black ml-1">(80% off)</span>
@@ -54,13 +104,13 @@ const Cart = () => {
                                 </button>
                             </div>
                             <div className="my-1">
-                                <h4 className="font-semibold text-sm">Amount : {cart.TotalAmount * cart.quantity}</h4>
+                                <h4 className="font-semibold text-sm">Amount : {cart.product?.price * cart.quantity}</h4>
                             </div>
                             <p className="text-sky-500 underline text-sm my-1 cursor-pointer">View Details</p>
                             <div className="flex flex-col my-2">
-                                <button onClick={() => { handleDeleteCart(cart._id) }}
+                                <button onClick={() => { handleDeleteCart(cart.product?._id) }}
                                     className="border-[1px] border-gray-900 bg-red-400  my-1 rounded-3xl px-2 py-1 w-full">Delete Cart</button>
-                                <button 
+                                <button
                                     className="border-[1px] border-gray-900 bg-yellow-300  my-1 rounded-3xl px-2 py-1 w-full">Buy Now</button>
                             </div>
                         </div>

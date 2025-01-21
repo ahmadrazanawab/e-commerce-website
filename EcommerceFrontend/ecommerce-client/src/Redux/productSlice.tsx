@@ -23,6 +23,9 @@ const prouductSlice = createSlice({
         setProducts: (state, actions: PayloadAction<ProductDetailsItem[]>) => {
             state.products = actions.payload
         },
+        setCart: (state, actions: PayloadAction<CartItem[]>) => {
+            state.cart = actions.payload
+        },
         addToCart: (state, action: PayloadAction<string | number>) => {
             const product = state.products.find((p) => p._id === action.payload);
             if (product) {
@@ -53,11 +56,12 @@ const prouductSlice = createSlice({
                 }
             }
         },
-        deleteCart: (state, actions: PayloadAction<string | number>) => {
-            state.cart = state.cart.filter((cart) => (cart._id !== actions.payload))
+        deleteCart: (state, actions: PayloadAction<string>) => {
+            const productId = actions.payload;
+            state.cart = state.cart.filter((item) => item._id !== productId);
         },
     }
 });
 
-export const { setProducts, addToCart,incrementQuantity, decrementQuantity,deleteCart } = prouductSlice.actions;
+export const { setProducts,setCart, addToCart,incrementQuantity, decrementQuantity,deleteCart } = prouductSlice.actions;
 export default prouductSlice.reducer;
