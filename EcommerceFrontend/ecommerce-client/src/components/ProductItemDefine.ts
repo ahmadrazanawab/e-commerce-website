@@ -10,3 +10,16 @@ export interface ProductDetailsItem {
     stock: number;
     category: string;
 };
+
+export interface ShippingAddress {
+    _id: string;
+    fullname: string;
+    mobile: number;
+    pincode: number;
+    HomeAddress: string;
+    Area: string;
+    landmark: string;
+    townorcity: string;
+    state: string;
+    country: string;
+};

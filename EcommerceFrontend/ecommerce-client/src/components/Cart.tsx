@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../Redux/Store";
 import { LiaRupeeSignSolid } from "react-icons/lia";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { setCart, incrementQuantity, decrementQuantity, deleteCart } from "../Redux/ProductSlice";
 import axios from "axios";
 import { useEffect } from "react";
@@ -9,7 +9,8 @@ import { useEffect } from "react";
 const Cart = () => {
     const host = "http://localhost:7002"
     const Carts = useSelector((state: RootState) => (state.products.cart));
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+    let navigate = useNavigate();
 
     const totalProductsPrice = Carts.reduce((totalPrice, item: any) => {
         return totalPrice + item.product?.price * item.quantity;
@@ -66,6 +67,10 @@ const Cart = () => {
         }
     }
 
+    const handleBuyProduct = (e:React.SyntheticEvent) => {
+        e.preventDefault();
+        navigate('/checkout');
+    }
 
 
     return (
@@ -110,7 +115,7 @@ const Cart = () => {
                             <div className="flex flex-col my-2">
                                 <button onClick={() => { handleDeleteCart(cart.product?._id) }}
                                     className="border-[1px] border-gray-900 bg-red-400  my-1 rounded-3xl px-2 py-1 w-full">Delete Cart</button>
-                                <button
+                                <button onClick={handleBuyProduct}
                                     className="border-[1px] border-gray-900 bg-yellow-300  my-1 rounded-3xl px-2 py-1 w-full">Buy Now</button>
                             </div>
                         </div>

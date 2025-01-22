@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ProductDetailsItem } from "../components/ProductItemDefine";
 import { LiaRupeeSignSolid } from "react-icons/lia";
 import { RootState } from "../Redux/Store";
+import { Link } from "react-router-dom";
 import { addToCart,incrementQuantity, decrementQuantity } from "../Redux/ProductSlice";
 import axios from "axios";
 
@@ -78,7 +79,7 @@ const ProductItem: React.FC<ProductProps> = (props) => {
             <div className="flex flex-col my-2">
                 <button onClick={() => { handleAddToCart(product._id)}}
                     className="border-[1px]  border-gray-900 bg-yellow-300  my-1  rounded-3xl px-2 py-1 w-full">Add to Cart</button>
-                <button className="border-[1px] border-gray-900 bg-yellow-300  my-1 rounded-3xl px-2 py-1 w-full">Buy Now</button>
+                <Link to="/checkout" className="border-[1px] text-center border-gray-900 bg-yellow-500  my-1 rounded-3xl px-2 py-1 w-full">Buy Now</Link>
             </div>
         </div>
     )

@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import About from "./components/About";
 import Cart from "./components/Cart";
+import Checkout from "./Pages/Checkout";
 // import Product from "./Pages/Product";
 
 const App = () => {
@@ -18,6 +19,10 @@ const App = () => {
         {
             path: '/cart',
             element:<><Navbar/><Cart/></>
+        },
+        {
+            path: '/checkout',
+            element:<><Checkout/></>
         },
     ])
     return (
