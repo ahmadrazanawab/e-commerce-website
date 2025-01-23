@@ -14,7 +14,7 @@ export interface ProductDetailsItem {
 export interface ShippingAddress {
     _id: string;
     fullname: string;
-    mobile: number;
+    mobileno: number;
     pincode: number;
     HomeAddress: string;
     Area: string;

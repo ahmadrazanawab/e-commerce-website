@@ -21,7 +21,7 @@ const App = () => {
             element:<><Navbar/><Cart/></>
         },
         {
-            path: '/checkout',
+            path: '/checkout/:id',
             element:<><Checkout/></>
         },
     ])

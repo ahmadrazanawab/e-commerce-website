@@ -3,7 +3,7 @@ const productRoute = express.Router();
 import { fetchAdmin } from "../Middleware/fetchAdmin.middleware.js";
 import { fetchUser } from "../Middleware/fetchUser.middleware.js";
 import { addCart,deleteProductFromCart,fetchAllCart  } from "../Controller/Cart.Controller.js";
-import { orderProduct } from "../Controller/Order.Controller.js";
+import { orderProduct,fetchAllOrderItems,fetchShippingAddress } from "../Controller/Order.Controller.js";
 import { upload } from "../Middleware/multer.middleware.js";
 import { UserReview } from "../Controller/Review.Controller.js";
 import {
@@ -24,6 +24,9 @@ productRoute.route("/fetchallcart").get(fetchUser, fetchAllCart);
 productRoute.route("/cart/product/:productId").delete(fetchUser, deleteProductFromCart);
 // user order product
 productRoute.route("/orderProduct").post(fetchUser, orderProduct);
+productRoute.route("/fetchallItems").get(fetchUser, fetchAllOrderItems);
+productRoute.route("/fetShippingAddress").get(fetchUser, fetchShippingAddress);
+
 // user review
 productRoute.route("/userReview").post(fetchUser, UserReview);
 

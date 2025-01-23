@@ -20,15 +20,35 @@ const orderSchema = new mongoose.Schema({
         }
     ],
     shippingAddress: {
-        address: {
+        fullname: {
             type: String,
             required: true
         },
-        city: {
+        mobileno: {
+            type: Number,
+            required: true
+        },
+        pincode: {
             type: String,
             required: true
         },
-        postalCode: {
+        HomeAddress: {
+            type: String,
+            required: true
+        },
+        Area: {
+            type: String,
+            required: true
+        },
+        landmark: {
+            type: String,
+            required: true
+        },
+        townorcity: {
+            type: String,
+            required: true
+        },
+        state: {
             type: String,
             required: true
         },
@@ -37,9 +57,13 @@ const orderSchema = new mongoose.Schema({
             required: true
         }
     },
+    paymentMethod: {
+        type: String,
+        required: true
+    },
     totalAmount: {
         type: Number,
-        required: true
+        default: ''
     },
     status: {
         type: String,

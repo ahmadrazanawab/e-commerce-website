@@ -2,19 +2,49 @@ import { Order } from "../Model/Order.model.js";
 import { asyncHandler } from "../Utility/asyncHandler.js";
 
 
+const fetchAllOrderItems = asyncHandler(async (req, res) => {
+    const userId = req.user.id;
+    const orders = await Order.find({ user: userId });
+    
+    if (!orders || orders.length === 0) {
+        return res.status(404).json({
+            success: false,
+            message: "No orders found for the user.",
+        });
+    }
+    
+    return res.status(200).json({ success: true, message: "all items fetch successfully", orders })
+});
+
+const fetchShippingAddress = asyncHandler(async (req, res) => {
+    const userId = req.user.id;
+    const orders = await Order.find({ user: userId }).select("shippingAddress")
+    
+    if (!orders || orders.length === 0) {
+        return res.status(404).json({
+            success: false,
+            message: "No orders found for the user.",
+        });
+    }
+    
+    return res.status(200).json({ success: true, message: "all items fetch successfully", orders })
+});
+
+
+// 
 const orderProduct = asyncHandler(async (req, res) => {
-    const { products, shippingAddress, totalAmount } = req.body;
+    const { products, shippingAddress, paymentMethod, totalAmount } = req.body;
     const userId = req.user.id;
 
-    // Validate request body
-    if (!products || !products.length || !shippingAddress || !totalAmount) {
+    // Validate request body  
+    if (!products || !products.length || !shippingAddress || !paymentMethod || !totalAmount) {
         return res.status(400).json({
             success: false,
             message: "Products, shipping address, and total amount are required.",
         });
     }
 
-    const invalidProducts = products.some(product => 
+    const invalidProducts = products.some(product =>
         !product.product || !product.quantity || product.quantity <= 0
     );
     if (invalidProducts) {
@@ -29,6 +59,7 @@ const orderProduct = asyncHandler(async (req, res) => {
         user: userId,
         products,
         shippingAddress,
+        paymentMethod,
         totalAmount,
     });
 
@@ -43,4 +74,4 @@ const orderProduct = asyncHandler(async (req, res) => {
     });
 });
 
-export { orderProduct };
+export { orderProduct, fetchAllOrderItems,fetchShippingAddress};

@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ProductDetailsItem } from "../components/ProductItemDefine";
 import { LiaRupeeSignSolid } from "react-icons/lia";
 import { RootState } from "../Redux/Store";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { addToCart,incrementQuantity, decrementQuantity } from "../Redux/ProductSlice";
 import axios from "axios";
 
@@ -15,8 +15,10 @@ const ProductItem: React.FC<ProductProps> = (props) => {
     const host = "http://localhost:7002";
     const { product } = props;
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const cart = useSelector((state: RootState) => state.products.cart);
+    
     const cartItem = cart.find((item) => item._id === product._id);
     const totalCartQuantity = cartItem?.quantity || 1;
     const totalPrice = totalCartQuantity * (cartItem?.price || product.price);
@@ -38,6 +40,9 @@ const ProductItem: React.FC<ProductProps> = (props) => {
         dispatch(addToCart(product));
         AddtoCart();
         alert("Product has been added to cart successfuly");
+    }
+    const handleBuyItem = (product: ProductDetailsItem) => {
+        navigate(`/checkout/${product._id}`, { state: { product }});
     }
 
     return (
@@ -79,7 +84,7 @@ const ProductItem: React.FC<ProductProps> = (props) => {
             <div className="flex flex-col my-2">
                 <button onClick={() => { handleAddToCart(product._id)}}
                     className="border-[1px]  border-gray-900 bg-yellow-300  my-1  rounded-3xl px-2 py-1 w-full">Add to Cart</button>
-                <Link to="/checkout" className="border-[1px] text-center border-gray-900 bg-yellow-500  my-1 rounded-3xl px-2 py-1 w-full">Buy Now</Link>
+                <button onClick={()=>{handleBuyItem(product)}} className="border-[1px] text-center border-gray-900 bg-yellow-500  my-1 rounded-3xl px-2 py-1 w-full">Buy Now</button>
             </div>
         </div>
     )

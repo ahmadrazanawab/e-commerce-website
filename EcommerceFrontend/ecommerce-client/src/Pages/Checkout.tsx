@@ -1,20 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaLock } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
-import chair from "../assets/Images/chair1.png";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Model from "../components/Model/Model";
-import { addUserShippingAdress } from "../Redux/UserAddressSlice";
+import { addUserShippingAdress, addOrder, setShippingAddress } from "../Redux/UserAddressSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ShippingAddress } from "../components/ProductItemDefine"
 import { RootState } from "../Redux/Store";
+import { incrementQuantity, decrementQuantity } from "../Redux/ProductSlice";
+
+import axios from "axios";
 const Checkout: React.FC = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState<string>("");
     const [userAddress, setUserAddress] = useState<Omit<ShippingAddress, '_id'>>({
         fullname: '',
-        mobile: 0,
+        mobileno: 0,
         pincode: 0,
         HomeAddress: '',
         Area: '',
@@ -23,8 +25,20 @@ const Checkout: React.FC = () => {
         state: '',
         country: ''
     });
+    const host = "http://localhost:7002"
     const dispatch = useDispatch();
     const addressValue = useSelector((state: RootState) => (state.user));
+    const location = useLocation();
+    // const product = location.state?.product; // Access the passed product
+    const product = location.state?.product?.product || location.state?.product;
+    const cartQuantity = location.state?.cart;
+    console.log(cartQuantity);
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (!product) {
+            navigate('/'); // Redirect to the home or product list page
+        }
+    }, [product, navigate])
 
     const showModalBtn = () => {
         setShowModal(true)
@@ -39,6 +53,97 @@ const Checkout: React.FC = () => {
         setUserAddress({ ...userAddress, [e.target.name]: e.target.value });
     }
 
+    const handleOrderSubmission = async () => {
+        if (!selectedAddress) {
+            alert("Please select a delivery address.");
+            return;
+        }
+        const selectedAddressData = addressValue.user.find((addr) => addr._id === selectedAddress);
+
+        if (!selectedAddressData) {
+            alert("Selected address not found. Please try again.");
+            return;
+        }
+        const orderData = {
+            products: [
+                {
+                    // Ensure `product._id` is defined
+                    product: product._id,
+                    // Replace with actual selected quantity
+                    quantity: 1,
+                },
+            ],
+            // Use the selected address data
+            shippingAddress: selectedAddressData,
+            // Payment method
+            paymentMethod: "Pay on Delivery",
+            // Replace with actual total amount
+            totalAmount: product.price,
+        };
+        console.log("Order Data:", orderData);
+
+        try {
+            const response = await axios.post(`${host}/api/product/v2/orderProduct`, orderData, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjc4ODlmOTRhY2M5YTQ5MzEzNTZmN2ZkIn0sImlhdCI6MTczNzM3Nzg1M30.GEDeMyHhYmcHEiZE7a9ek2xW1WJG5ZhBUxM7SZPz1rs"
+                }
+            });
+            console.log("Order submitted successfully:", response.data);
+            dispatch(addOrder(response.data));
+            alert("Order placed successfully!");
+
+        } catch (error) {
+            console.error("Error while submitting the order:", error);
+        }
+    }
+    // http://localhost:7002
+    const fetchShippingAdress = async () => {
+        try {
+            const response = await axios.get(`${host}/api/product/v2/fetShippingAddress`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjc4ODlmOTRhY2M5YTQ5MzEzNTZmN2ZkIn0sImlhdCI6MTczNzM3Nzg1M30.GEDeMyHhYmcHEiZE7a9ek2xW1WJG5ZhBUxM7SZPz1rs"
+                }
+            });
+
+            const userAddress = response.data.orders;
+            console.log(userAddress);
+            dispatch(setShippingAddress(userAddress));
+        } catch (error) {
+            console.log("Fetch shipping address error..", error);
+        }
+    }
+
+    useEffect(() => {
+        fetchShippingAdress();
+    }, [selectedAddress]);
+
+    // useEffect(() => {
+    //     const fetchShippingAddresses = async () => {
+    //         try {
+    //             const response = await axios.get(`${host}/api/product/v2/fetShippingAddress`, {
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                     "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjc4ODlmOTRhY2M5YTQ5MzEzNTZmN2ZkIn0sImlhdCI6MTczNzM3Nzg1M30.GEDeMyHhYmcHEiZE7a9ek2xW1WJG5ZhBUxM7SZPz1rs"
+    //                 }
+    //             });
+
+    //             // Check if the response data has the expected format
+    //             if (!response.data.orders) {
+    //                 console.error("Unexpected response format from API");
+    //                 return;
+    //             }
+    //             const userAddress = response.data.orders;
+    //             console.log(userAddress);
+    //             dispatch(setShippingAddress(userAddress));
+    //         } catch (error) {
+    //             console.log("Fetch shipping address error..", error);
+    //         }
+    //     };
+    //     fetchShippingAddresses();
+    // }, [selectedAddress]);
+
     const handleAddAddress = (e: React.FormEvent) => {
         e.preventDefault();
         const newProduct: ShippingAddress = {
@@ -48,6 +153,7 @@ const Checkout: React.FC = () => {
         dispatch(addUserShippingAdress(newProduct));
         console.log(newProduct);
     }
+
 
     return (
         <section className="sm:bg-slate-50">
@@ -88,9 +194,9 @@ const Checkout: React.FC = () => {
                         <div>
                             <label htmlFor="mobileNo" className={`block mb-2 text-sm font-medium`}>Mobile number</label>
                             <input type="number"
-                                value={userAddress.mobile || ""}
+                                value={userAddress.mobileno || ""}
                                 onChange={onchange}
-                                name="mobile" id="number"
+                                name="mobileno" id="number"
                                 className={`border-[2px] text-gray-900 focus:ring-blue-500 focus:border-blue-500  outline-none  text-sm rounded-lg  block w-full p-2`} />
                         </div>
                         <div>
@@ -194,9 +300,9 @@ const Checkout: React.FC = () => {
                 </div>
                 <div className="p-4 sm:w-3/4 w-full bg-white mx-1 shadow-sm border-[1px] border-gray-700 rounded">
                     <h4 className="text-xl font-semibold">Your Addresses</h4><hr className="" />
-                    <div className="flex flex-col">
+                    <div className="flex flex-col h-full">
                         {
-                            addressValue.user.map((user) => {
+                            addressValue.user.map((user: any) => {
                                 return <div key={user._id} className="flex items-center bg-red-50 mx-1 p-3 mt-2 mb-1 rounded shadow-sm border-[2px] border-red-100">
                                     <span>
                                         <input
@@ -208,8 +314,18 @@ const Checkout: React.FC = () => {
                                             className="mr-2 checked:text-green-600"
                                         />
                                     </span>
-                                    <span className="font-semibold mx-1">{user.fullname}</span>
-                                    {user.HomeAddress},{user.Area},{user.landmark},{user.townorcity},{user.state},{user.pincode},{user.country}
+                                    <p className="flex md:flex-row flex-col flex-wrap">
+                                        <span className="font-semibold mx-1">{user.shippingAddress?.fullname || user.fullname}</span>
+                                        <span>
+                                            {user.HomeAddress || user.shippingAddress?.HomeAddress},
+                                            {user.Area || user.shippingAddress?.Area},
+                                            {user.landmark || user.shippingAddress?.landmark},
+                                            {user.townorcity || user.shippingAddress?.townorcity},
+                                            {user.state || user.shippingAddress?.state},
+                                            {user.pincode || user.shippingAddress?.pincode},
+                                            {user.country || user.shippingAddress?.country}
+                                        </span>
+                                    </p>
                                 </div>
                             })
                         }
@@ -224,12 +340,35 @@ const Checkout: React.FC = () => {
                 </div>
                 <div className="flex justify-between sm:w-3/4 w-full mx-1 items-center mt-4 pb-2">
                     <h1 className="sm:text-xl font-semibold">Items and delivery</h1>
-                    <p className="text-sm text-gray-800 max-w-60 flex"><span> <img src={chair} alt="No Image" /> </span>
-                        <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda autem soluta fuga?</span> </p>
-                    <button className="text-sm text-gray-400">review order</button>
+                    <div className="flex md:flex-row flex-col text-sm text-gray-800">
+                        <div className="w-[150px]">
+                            <img src={product.images} alt="No image" />
+                        </div>
+                        <div className="mx-1">
+                            <h2 className="md:text-xl font-bold">{product.name}</h2>
+                            <p className="text-sm">{product.description}</p>
+                            <div className="flex items-center"> <label htmlFor="qty">Qty:</label>
+                                <button onClick={() => { dispatch(decrementQuantity(product._id)) }}
+
+                                    className="px-2 border-[1px] border-gray-900 outline-none mx-2 rounded bg-gray-400 text-white font-bold"
+                                >
+                                    -
+                                </button>
+                                <h4 className="text-red-500 text-xl">1</h4>
+                                <button
+                                    onClick={() => dispatch(incrementQuantity(product._id))}
+                                    className="px-2 border-[1px] outline-none border-gray-900 mx-2 rounded bg-gray-400 text-white font-bold"
+                                >
+                                    +
+                                </button>
+                            </div>
+                            <p className="text-xl">Price: <span className="font-semibold text-xl"> {product.price}</span></p>
+                        </div>
+                    </div>
+                    <button className="md:block hidden text-sm text-gray-400">review order</button>
                 </div>
                 <div className="flex justify-center mt-4 pb-2 sm:w-3/4 w-full mx-2">
-                    <button className="text-xl font-semibold w-full bg-yellow-500 text-black px-2 py-1 rounded outline-none">Order Now</button>
+                    <button onClick={handleOrderSubmission} className="text-xl font-semibold w-full bg-yellow-500 text-black px-2 py-1 rounded outline-none">Order Now</button>
                 </div>
             </div>
         </section>
