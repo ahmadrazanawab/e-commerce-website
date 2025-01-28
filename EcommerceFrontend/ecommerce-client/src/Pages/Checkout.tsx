@@ -31,8 +31,7 @@ const Checkout: React.FC = () => {
     const location = useLocation();
     // const product = location.state?.product; // Access the passed product
     const product = location.state?.product?.product || location.state?.product;
-    const cartQuantity = location.state?.cart;
-    console.log(cartQuantity);
+    // console.log(product);
     const navigate = useNavigate();
     useEffect(() => {
         if (!product) {
@@ -53,7 +52,8 @@ const Checkout: React.FC = () => {
         setUserAddress({ ...userAddress, [e.target.name]: e.target.value });
     }
 
-    const handleOrderSubmission = async () => {
+    const handleOrderSubmission = async (e: React.SyntheticEvent) => {
+        e.preventDefault();
         if (!selectedAddress) {
             alert("Please select a delivery address.");
             return;
@@ -69,46 +69,50 @@ const Checkout: React.FC = () => {
                 {
                     // Ensure `product._id` is defined
                     product: product._id,
-                    // Replace with actual selected quantity
                     quantity: 1,
                 },
             ],
             // Use the selected address data
-            shippingAddress: selectedAddressData,
+            shippingAddress: selectedAddressData ||
+            {
+                fullname: product.fullname,
+                mobileno: product.mobileno,
+                images:product.images,
+            },
             // Payment method
             paymentMethod: "Pay on Delivery",
             // Replace with actual total amount
-            totalAmount: product.price,
+            totalAmount: product?.price,
         };
-        console.log("Order Data:", orderData);
-
+        // console.log("Order Data:", orderData);
         try {
             const response = await axios.post(`${host}/api/product/v2/orderProduct`, orderData, {
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjc4ODlmOTRhY2M5YTQ5MzEzNTZmN2ZkIn0sImlhdCI6MTczNzM3Nzg1M30.GEDeMyHhYmcHEiZE7a9ek2xW1WJG5ZhBUxM7SZPz1rs"
+                    "auth-token": localStorage.getItem('token') || "",
                 }
             });
-            console.log("Order submitted successfully:", response.data);
+            // console.log("Order submitted successfully:", response.data);
             dispatch(addOrder(response.data));
             alert("Order placed successfully!");
+            navigate('/viewOrderitem');
 
         } catch (error) {
             console.error("Error while submitting the order:", error);
         }
     }
-    // http://localhost:7002
+   
     const fetchShippingAdress = async () => {
         try {
             const response = await axios.get(`${host}/api/product/v2/fetShippingAddress`, {
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjc4ODlmOTRhY2M5YTQ5MzEzNTZmN2ZkIn0sImlhdCI6MTczNzM3Nzg1M30.GEDeMyHhYmcHEiZE7a9ek2xW1WJG5ZhBUxM7SZPz1rs"
+                    "auth-token": localStorage.getItem('token') || "",
                 }
             });
 
             const userAddress = response.data.orders;
-            console.log(userAddress);
+            // console.log(userAddress);
             dispatch(setShippingAddress(userAddress));
         } catch (error) {
             console.log("Fetch shipping address error..", error);
@@ -117,41 +121,18 @@ const Checkout: React.FC = () => {
 
     useEffect(() => {
         fetchShippingAdress();
-    }, [selectedAddress]);
-
-    // useEffect(() => {
-    //     const fetchShippingAddresses = async () => {
-    //         try {
-    //             const response = await axios.get(`${host}/api/product/v2/fetShippingAddress`, {
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                     "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjc4ODlmOTRhY2M5YTQ5MzEzNTZmN2ZkIn0sImlhdCI6MTczNzM3Nzg1M30.GEDeMyHhYmcHEiZE7a9ek2xW1WJG5ZhBUxM7SZPz1rs"
-    //                 }
-    //             });
-
-    //             // Check if the response data has the expected format
-    //             if (!response.data.orders) {
-    //                 console.error("Unexpected response format from API");
-    //                 return;
-    //             }
-    //             const userAddress = response.data.orders;
-    //             console.log(userAddress);
-    //             dispatch(setShippingAddress(userAddress));
-    //         } catch (error) {
-    //             console.log("Fetch shipping address error..", error);
-    //         }
-    //     };
-    //     fetchShippingAddresses();
-    // }, [selectedAddress]);
+    }, []);
 
     const handleAddAddress = (e: React.FormEvent) => {
         e.preventDefault();
-        const newProduct: ShippingAddress = {
+        const newAddress: ShippingAddress = {
             _id: Date.now().toString(),
             ...userAddress,
         };
-        dispatch(addUserShippingAdress(newProduct));
-        console.log(newProduct);
+        dispatch(addUserShippingAdress(newAddress));
+        setSelectedAddress(newAddress._id);
+        setShowModal(false);
+        // console.log(newAddress._id);
     }
 
 
@@ -354,7 +335,7 @@ const Checkout: React.FC = () => {
                                 >
                                     -
                                 </button>
-                                <h4 className="text-red-500 text-xl">1</h4>
+                                <h4 className="text-red-500 text-xl">{product.quantity}</h4>
                                 <button
                                     onClick={() => dispatch(incrementQuantity(product._id))}
                                     className="px-2 border-[1px] outline-none border-gray-900 mx-2 rounded bg-gray-400 text-white font-bold"

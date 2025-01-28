@@ -22,7 +22,7 @@ const Cart = () => {
             const response = await axios.get(`${host}/api/product/v2/fetchallcart`, {
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjc4ODlmOTRhY2M5YTQ5MzEzNTZmN2ZkIn0sImlhdCI6MTczNzM3Nzg1M30.GEDeMyHhYmcHEiZE7a9ek2xW1WJG5ZhBUxM7SZPz1rs"
+                    "auth-token": localStorage.getItem('token') || "",
                 }
             });
 
@@ -36,7 +36,13 @@ const Cart = () => {
     };
 
     useEffect(() => {
-        fetchAllCarts();
+        if (localStorage.getItem('token')) {
+            fetchAllCarts();
+        }
+        else {
+            navigate('/signin');
+        }
+        
     }, []);
 
     const deleteProductFromCart = async (productId: string) => {
@@ -45,7 +51,7 @@ const Cart = () => {
             const response = await axios.delete(`${host}/api/product/v2/cart/product/${productId}`, {
                 headers: {
                     "Content-Type": "application/json",
-                    "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjc4ODlmOTRhY2M5YTQ5MzEzNTZmN2ZkIn0sImlhdCI6MTczNzM3Nzg1M30.GEDeMyHhYmcHEiZE7a9ek2xW1WJG5ZhBUxM7SZPz1rs"
+                    "auth-token": localStorage.getItem('token') || "",
                 }
             });
             console.log(response.data);
@@ -70,6 +76,10 @@ const Cart = () => {
     const handleBuyProduct = (product:any) => {
         navigate(`/checkout/${product.product?._id}`,{state:{ product }});
         console.log(`/checkout/${product.product?._id}`,product);
+    }
+
+    const handleVeiwItem = (product:any) => {
+        navigate(`/itemDetails/${product.product?._id}`,{state:{ product }});
     }
 
 
@@ -109,9 +119,9 @@ const Cart = () => {
                                 </button>
                             </div>
                             <div className="my-1">
-                                <h4 className="font-semibold text-sm">Amount : {cart.product?.price * cart.quantity}</h4>
+                                <h4 className="font-semibold text-sm">Total Amount : {cart.product?.price * cart.quantity}</h4>
                             </div>
-                            <p className="text-sky-500 underline text-sm my-1 cursor-pointer">View Details</p>
+                            <button onClick={()=>{handleVeiwItem(cart.product)}} className="text-sky-500 underline text-sm my-1 cursor-pointer">View Details</button>
                             <div className="flex flex-col my-2">
                                 <button onClick={() => { handleDeleteCart(cart.product?._id) }}
                                     className="border-[1px] border-gray-900 bg-red-400  my-1 rounded-3xl px-2 py-1 w-full">Delete Cart</button>

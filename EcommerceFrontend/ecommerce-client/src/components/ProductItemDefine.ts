@@ -23,3 +23,10 @@ export interface ShippingAddress {
     state: string;
     country: string;
 };
+
+export interface UserAuth {
+    name: string;
+    email: string;
+    number: number;
+    password: string;
+};

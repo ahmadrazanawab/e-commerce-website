@@ -4,7 +4,7 @@ import Product from "../Pages/Product";
 
 const Home = () => {
     return (
-        <div className="pt-20 h-[200vh] bg-slate-100">
+        <div className="pt-16 h-[200vh] bg-slate-100">
             <Hero/>
             <Product/>
         </div>

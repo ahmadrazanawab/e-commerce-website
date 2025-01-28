@@ -40,8 +40,11 @@ const UserAddressSlice = createSlice({
         setShippingAddress: (state, action: PayloadAction<ShippingAddress[]>) => {
             state.user = action.payload
         },
+        setOrderItems: (state, action: PayloadAction<Order[]>) => {
+            state.orders = action.payload;
+        }
     }
 });
 
-export const { addOrder, setShippingAddress, addUserShippingAdress } = UserAddressSlice.actions;
+export const { addOrder, setShippingAddress, addUserShippingAdress,setOrderItems } = UserAddressSlice.actions;
 export default UserAddressSlice.reducer;

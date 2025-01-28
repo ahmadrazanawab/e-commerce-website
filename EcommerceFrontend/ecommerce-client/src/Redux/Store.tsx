@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import prouductSlice from "./ProductSlice";
 import UserAddressSlice from "./UserAddressSlice";
+import userAuthSlice from "./UserAuth";
 
 const store = configureStore({
     reducer: {
         products: prouductSlice,
-        user:UserAddressSlice,
+        user: UserAddressSlice,
+        userAuth: userAuthSlice,
     }
 });
 

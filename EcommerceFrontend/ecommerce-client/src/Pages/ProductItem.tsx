@@ -3,7 +3,7 @@ import { ProductDetailsItem } from "../components/ProductItemDefine";
 import { LiaRupeeSignSolid } from "react-icons/lia";
 import { RootState } from "../Redux/Store";
 import { useNavigate } from "react-router-dom";
-import { addToCart,incrementQuantity, decrementQuantity } from "../Redux/ProductSlice";
+import { addToCart } from "../Redux/ProductSlice";
 import axios from "axios";
 
 interface ProductProps {
@@ -18,31 +18,51 @@ const ProductItem: React.FC<ProductProps> = (props) => {
     const navigate = useNavigate();
 
     const cart = useSelector((state: RootState) => state.products.cart);
-    
+
     const cartItem = cart.find((item) => item._id === product._id);
-    const totalCartQuantity = cartItem?.quantity || 1;
-    const totalPrice = totalCartQuantity * (cartItem?.price || product.price);
-   
+
+
     const AddtoCart = async () => {
         const response = await axios.post(`${host}/api/product/v2/addtocart`, {
             productId: product._id,
             quantity: cartItem?.quantity || 1
         }, {
             headers: {
-                "Content-Type":"application/json",
-                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjc4ODlmOTRhY2M5YTQ5MzEzNTZmN2ZkIn0sImlhdCI6MTczNzM3Nzg1M30.GEDeMyHhYmcHEiZE7a9ek2xW1WJG5ZhBUxM7SZPz1rs"
+                "Content-Type": "application/json",
+                "auth-token": localStorage.getItem('token') || "",
             }
         });
         console.log(response.data);
     }
-    
+
     const handleAddToCart = (product: any) => {
-        dispatch(addToCart(product));
-        AddtoCart();
-        alert("Product has been added to cart successfuly");
+        if (localStorage.getItem('token')) {
+            dispatch(addToCart(product));
+            AddtoCart();
+            alert("Product has been added to cart successfuly");
+        }
+        else {
+            navigate('/signin');
+        }
     }
     const handleBuyItem = (product: ProductDetailsItem) => {
-        navigate(`/checkout/${product._id}`, { state: { product }});
+        if (localStorage.getItem('token')) {
+            navigate(`/checkout/${product._id}`, { state: { product } });
+        }
+        else {
+            navigate('/signin');
+        }
+
+    }
+
+    const handleViewItem = (product: ProductDetailsItem) => {
+        if (localStorage.getItem('token')) {
+            navigate(`/itemDetails/${product._id}`, { state: { product } })
+        }
+        else {
+            navigate('/signin');
+        }
+
     }
 
     return (
@@ -62,29 +82,11 @@ const ProductItem: React.FC<ProductProps> = (props) => {
                 </span>
             </p>
             <p>stock:{product.stock}</p>
-            <div className="flex items-center"> <label htmlFor="qty">Qty:</label>
-                <button onClick={() => { dispatch(decrementQuantity(product._id)) }}
-                    
-                    className="px-2 border-[1px] border-gray-900 outline-none mx-2 rounded bg-gray-400 text-white font-bold"
-                >
-                    -
-                </button>
-                <h4 className="text-red-500 text-xl">{totalCartQuantity}</h4>
-                <button
-                    onClick={() => dispatch(incrementQuantity(product._id))}
-                    className="px-2 border-[1px] outline-none border-gray-900 mx-2 rounded bg-gray-400 text-white font-bold"
-                >
-                    +
-                </button>
-            </div>
-            <div>
-                <h4 className="mx-2 my-1 font-semibold">{ totalPrice}</h4>
-            </div>
-            <p className="text-sky-500 underline text-sm my-1 cursor-pointer">View Details</p>
+            <button onClick={() => { handleViewItem(product) }} className="text-sky-500 underline text-sm my-1 cursor-pointer">View Details</button>
             <div className="flex flex-col my-2">
-                <button onClick={() => { handleAddToCart(product._id)}}
+                <button onClick={() => { handleAddToCart(product._id) }}
                     className="border-[1px]  border-gray-900 bg-yellow-300  my-1  rounded-3xl px-2 py-1 w-full">Add to Cart</button>
-                <button onClick={()=>{handleBuyItem(product)}} className="border-[1px] text-center border-gray-900 bg-yellow-500  my-1 rounded-3xl px-2 py-1 w-full">Buy Now</button>
+                <button onClick={() => { handleBuyItem(product) }} className="border-[1px] text-center border-gray-900 bg-yellow-500  my-1 rounded-3xl px-2 py-1 w-full">Buy Now</button>
             </div>
         </div>
     )
