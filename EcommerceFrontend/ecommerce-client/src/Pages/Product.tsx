@@ -32,7 +32,7 @@ const Product = () => {
 
 
     return (
-        <div className="bg-gray-200 pb-4 pt-20">
+        <div className="bg-gray-200 pb-4 md:pt-20 pt-10">
             <h5 className="text-center mb-4 text-2xl font-serif underline "> All Product </h5>
             <div className="flex mx-4 justify-center flex-wrap">
                 {

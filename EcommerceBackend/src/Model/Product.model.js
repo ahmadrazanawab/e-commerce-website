@@ -6,7 +6,8 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     description: {
-        type: String
+        type: String,
+        default:"",
     },
     images: [
         {
@@ -15,6 +16,14 @@ const productSchema = new mongoose.Schema({
         }
     ],
     price: {
+        type: Number,
+        required: true
+    },
+    mrpPrice: {
+        type: Number,
+        required: true
+    },
+    disPercentage: {
         type: Number,
         required: true
     },

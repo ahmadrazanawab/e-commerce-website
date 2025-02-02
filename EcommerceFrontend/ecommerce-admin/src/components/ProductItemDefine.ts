@@ -1,9 +1,11 @@
 export interface ProductItem {
-    _id: number;
+    _id: string;
     name: string;
     description: string;
     images: string;
     price: number;
+    mrpPrice: number;
+    disPercentage: number;
     stock: number;
     category: string;
 }
@@ -13,5 +15,4 @@ export interface getUserDetails {
     email: string;
     number: number;
     createdAt?: number;
-
 }

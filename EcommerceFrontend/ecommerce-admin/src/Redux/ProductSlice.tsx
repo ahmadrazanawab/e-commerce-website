@@ -17,11 +17,15 @@ const productSlice = createSlice({
     reducers: {
         setProducts(state, action: PayloadAction<ProductItem[]>) {
             state.products = action.payload;
-          },
+        },
         addProduct: (state, action: PayloadAction<ProductItem>) => {
             state.products.push(action.payload); // Add new product to the list
         },
-        deleteProduct: (state, action: PayloadAction<number>) => {
+        updateProduct: (state, action: PayloadAction<ProductItem>) => {
+            state.products = state.products.map((item) => item._id === action.payload._id ?
+                { ...item, ...action.payload } : item);
+        },
+        deleteProduct: (state, action: PayloadAction<string>) => {
             state.products = state.products.filter(
                 (product) => product._id !== action.payload
             );
@@ -29,7 +33,7 @@ const productSlice = createSlice({
     }
 })
 
-export const {addProduct, deleteProduct,setProducts } = productSlice.actions;
+export const { addProduct, updateProduct, deleteProduct, setProducts } = productSlice.actions;
 export default productSlice.reducer;
 
 

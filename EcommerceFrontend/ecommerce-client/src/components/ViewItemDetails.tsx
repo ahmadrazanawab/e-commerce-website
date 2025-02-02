@@ -52,19 +52,17 @@ const ViewItemDetails: React.FC = () => {
                         <img src={product.images} alt="No item images" className='w-[600px] h-[400px]' />
                     </div>
                     <div className='flex flex-col justify-between px-2 py-1 w-full bg-white'>
-                        <h4 className='md:text-2xl sm:text-xl font-semibold font-serif'> {product.name}
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi totam accusantium fuga, omnis laborum earum iure. Minima deserunt aliquam quas.
+                        <h4 className='md:text-2xl sm:text-xl font-semibold font-serif'> {product.description}
                         </h4>
-                        <p className='text-sm'>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quis ullam nesciunt id.</p>
                         <p className='flex text-xl font-bold items-center'>
-                            <span className='text-red-400 font-thin text-2xl'>-50%</span>
+                            <span className='text-red-400 font-thin text-2xl'>-{ product.disPercentage}%</span>
                             <span className='ml-2'><LiaRupeeSignSolid size={20} /></span>
                             <span className='text-2xl font-bold'>{product.price}</span>
                         </p>
                         <p className='flex items-center text-sm'>
                             <span className='text-gray-500'>M.R.P</span>
                             <span className='text-gray-500 '><LiaRupeeSignSolid className='line-through' size={14} /></span>
-                            <span className='text-gray-500 line-through font-semibold'>1499</span>
+                            <span className='text-gray-500 line-through font-semibold'>{ product.mrpPrice}</span>
                         </p>
                         <div className='flex md:flex-row flex-col md:justify-between justify-center items-center py-2 my-2 mx-2'>
                             <div className='p-2 rounded shadow-sm bg-slate-100 my-1 mx-1'>

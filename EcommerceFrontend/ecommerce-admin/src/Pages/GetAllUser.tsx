@@ -13,7 +13,7 @@ const GetAllUser: React.FC = () => {
       const response = await axios.get(`${host}/api/auth/admin/v1/getAllUser`, {
         headers: {
           "Content-Type": "multipart/form-data",
-          "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ODhhMWJlNWFmNTExM2I2OTVmMmE0ZCIsImlhdCI6MTczNzI4MjUzMCwiZXhwIjoxNzM3Mjg2MTMwfQ.I3ro2PYlQvTSukTc5AzsNvnnpc4AbAgyO8aPDvTmRr8",
+          "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ODhhMWJlNWFmNTExM2I2OTVmMmE0ZCIsImlhdCI6MTczODIxNjQwOH0.5EZfnFRRfJ_3AhEsTZp5JKl_YP40M8VvGYMNfv0G2hs",
         },
       });
       const user = response.data.user;

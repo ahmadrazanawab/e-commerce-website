@@ -77,8 +77,8 @@ const ProductItem: React.FC<ProductProps> = (props) => {
                 <span><LiaRupeeSignSolid /></span>
                 <span className="text-xl font-bold">{product.price}</span>
                 <span className="flex items-center mx-2 text-sm text-gray-600">M.R.P:
-                    <span className="flex items-center line-through "><LiaRupeeSignSolid />1400</span>
-                    <span className="text-black ml-1">(80% off)</span>
+                    <span className="flex items-center line-through "><LiaRupeeSignSolid />{product.mrpPrice}</span>
+                    <span className="text-black ml-1">({ product.disPercentage}% off)</span>
                 </span>
             </p>
             <p>stock:{product.stock}</p>

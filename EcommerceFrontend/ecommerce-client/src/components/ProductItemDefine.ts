@@ -4,6 +4,8 @@ export interface ProductDetailsItem {
     description: string;
     images: string;
     price: number;
+    mrpPrice: number;
+    disPercentage: number;
     TotalPrice: number;
     quantity?: number;
     TotalQuantity?: number;
